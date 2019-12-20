@@ -11,4 +11,5 @@ Another problem is that the current algorithm can only find one uninvadable stat
 --------
 
 The second idea is of game theory. The first step is to only have pure strategies of using preference list of nutrient. For each speices there is a set of fixed growth rates, and the preference order can be changed to reach its best payoff. We try to find the Nash Equilibrium of the system. Some trivial NEs include the states where certain species never survive no matter what strategy it uses. This is also the most usual case. 
+
 The second step is to have mixed strategies, in which we might be able to map these mixed strategies to certain coutilization proportions. 
