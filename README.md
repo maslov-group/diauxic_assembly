@@ -10,6 +10,8 @@ The patch that contains functions that adds the feature of lags.
 
 #### (Other notebooks that shows how to make figures)
 
+#### Parameters
+
 | Parameter  | Meaning                                                      | Value | Notes                                            |
 | ---------- | ------------------------------------------------------------ | ----- | ------------------------------------------------ |
 | $S$        | Number of species                                            | 11520 | $M!\cdot S_0$                                    |
