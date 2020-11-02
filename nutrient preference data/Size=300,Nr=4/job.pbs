@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+#PBS -l walltime=04:00:00
+#PBS -l nodes=1:ppn=12
+#PBS -N myjob
+#PBS -q secondary
+#
+# End of embedded QSUB options
+#
+module load anaconda/2019-Oct/3
+python3 /home/zihanw8/scratch/dynamics_2020_07/RunsWithLags.py ${NR} ${INDEX} 
