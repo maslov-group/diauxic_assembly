@@ -20,5 +20,5 @@ This repository contains the code used to simulate the community assembly of dia
 | Microbe concentration at invasion                            | 1e-6  |                                                              |
 | Threshold under which a species is seen as eliminated        | 1e-6  |                                                              |
 | Threshold under which a resource is seen as depleted         | 1e-9  |                                                              |
-| Number of simulated independent systems                      | 958   |                                                              |
+| Number of simulated independent systems                      | 958   |  Originally 1000; some data were broken on the server                                                            |
 
