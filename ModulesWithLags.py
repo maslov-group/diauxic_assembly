@@ -113,7 +113,7 @@ def move_to_new(system, fluc = []):
     details['res_begin'].append(baseline)
     return system
 
-def invade(system, bug, growth_rate_list):
+def invade(system, bug, growth_rate_list, invlist):
     global details
     # (starting from a new flask)
     # then add invasive species
@@ -126,7 +126,7 @@ def invade(system, bug, growth_rate_list):
         t_begin = t_points[0]
         i = 0
         nut = 0
-        for idx in range(len(t_points[:-2])):
+        for idx in range(len(t_points[:-1])):
             switch_flag = 0 # if switch to next nutrient
             t_end = t_points[idx + 1]
             pref_bug = preference_list[bug//Size]
@@ -155,26 +155,29 @@ def invade(system, bug, growth_rate_list):
         while(len(output(system)[0])>Nr or i < dilute_to_steady or eqm == 0):
             i=i+1
             system, t_points, c_points, r_points = dilute_check(system, growth_rate_list)
+            if sum(system['bug_available']) == 0:
+                details = {'res_begin':[], 't_info':[], 'res_left':[], 'bug_info':[], 'round_idx':[0]}
+                system = {'res_available': np.heaviside(Res, 0), 'res_concentration': [i for i in Res], 'bug_available': [0 for i in range(Nb)], 'bug_density': [0 for i in range(Nb)]}
+                break
             # move to a new flask
             system = move_to_new(system, fluc=[])
             if(len(details['bug_info']) > 2):
                 if(len(details['bug_info'][-1][0]) == len(details['bug_info'][-2][0])):
                     if max([abs(details['bug_info'][-1][1][1][i]-details['bug_info'][-2][1][1][i])/details['bug_info'][-2][1][1][i] for i in range(len(details['bug_info'][-2][1][1]))]) < 5e-3:
                         eqm = 1
-    # it is necessary to do 2 runs here
         system, t_points, c_points, r_points = dilute_check(system, growth_rate_list)
         system = move_to_new(system, fluc=[])
-        ext_list = [i for i, v in enumerate(system['bug_available']) if v==0]
+        ext_list = [i for i in invlist if system['bug_available'][i] == 0]
         return system, ext_list
     else:
-        ext_list = [i for i, v in enumerate(system1['bug_available']) if v==0]
+        ext_list = [i for i in invlist if system['bug_available'][i] == 0]
         if('round_idx' in details.keys()):
             details['round_idx'][-1] += T_dilute
         return system, ext_list
 
 def round_robin_invade(system, ext_list, growth_rate_list):
     for bug in ext_list:
-        system, new_ext_list = invade(system, bug, growth_rate_list)
+        system, new_ext_list = invade(system, bug, growth_rate_list, ext_list)
     return system, new_ext_list
 
 def output(system):
@@ -254,7 +257,7 @@ def FreakGrowthRates(output):
             freakGs.append(output[3][i])
     return freakGs
 
-# generating growth rates of different ditributions
+# generating growth rates of different distributions
 
 def G(Nb, Nr, budget, g_var):
     growth_rate_list = np.random.random([Nb, Nr])*np.exp(np.random.normal(0, g_var, (Nb, 1)))*budget
@@ -265,7 +268,6 @@ def G(Nb, Nr, budget, g_var):
 
 def GLN(Nb, Nr, budget, g_var):
     growth_rate_list = np.exp(np.random.normal(0, g_var, (Nb, Nr)))*budget
-    #growth_rate_list = budget*growth_rate_list / np.sum(growth_rate_list, axis=1)[:, None]*np.exp(np.random.normal(0, g_var, (Nb, 1)))
     return growth_rate_list
 
 
@@ -305,78 +307,6 @@ def PickInvadersFor2Res(G):
         if i[0] > G[expert2][0]:
             InvList.append(idx+int((Nb+1)/2))
     return InvList
-
-# displaying the growth rates of a 3-nutrient scheme.
-def barplot_state(system, colors):
-    fig = plt.figure()
-    ax = fig.add_axes([0, 0, 1, 1])
-    data = output(system)
-    labels = [str(i) for i in range(len(data[0]))]
-    Nr = len(data[2][0])
-    Nb = len(labels)
-    width = 0.2 # width of bar
-    for bug in np.arange(Nb):
-        for nutrient in np.arange(Nr):
-            ax.bar(bug+(0.5+nutrient)*width-0.5*Nr*width, data[3][bug][data[2][bug][nutrient]], width, color = colors[data[2][bug][nutrient]])
-    ax.set_ylabel("growth rates")
-    ax.set_xlabel("bugs")
-    ax.set_xticks(np.arange(Nb))
-    ax.set_xticklabels(labels)
-    legendlabel = ['resource {}'.format(i) for i in range(Nr)]
-    patches = [mpatches.Patch(color=colors[i], label='{}'.format(legendlabel[i])) for i in range(Nr)]
-    ax.legend(handles=patches, bbox_to_anchor=(1,1.12), ncol=Nr)
-    ax.text(0+(0.5+0)*width-0.5*Nr*width, data[3][0][data[2][0][0]]+0.5, "1st\nchoice", ha="center", va="center",
-            size=10)
-    ax.text(0+(0.5+1)*width-0.5*Nr*width, data[3][0][data[2][0][1]]+0.5, "2nd\nchoice", ha="center", va="center",
-            size=10)
-    ax.text(0+(0.5+2)*width-0.5*Nr*width, data[3][0][data[2][0][2]]+0.5, "3rd\nchoice", ha="center", va="center",
-            size=10)
-    plt.show()
-
-# this is about drawing the dynamical stuff
-def plot_details(details, section = "all"):
-    bug_info = details["bug_info"]
-    t_info = details["t_info"]
-    if section != "all":
-        bug_info = bug_info[section[0]:section[1]]
-        t_info = t_info[section[0]:section[1]]
-    bugset = []
-    timesteps = 0
-    for i in range(len(bug_info)):
-        bugset+=bug_info[i][0]
-        timesteps += len(bug_info[i][1])
-    bugset=list(set(bugset))#去重
-    lines = []
-    times = []
-    times_markers=[]
-    T_dilute = t_info[0][-1]
-    for i in range(len(t_info)):
-        times += [i*T_dilute+j for j in t_info[i]]
-        times_markers+=[i*T_dilute+j for j in t_info[i] if j != 0 and j != T_dilute]
-    for i in range(len(bugset)):
-        bug = bugset[i]
-        bugtrace = [bug]
-        for k in range(len(bug_info)):
-            if bug in bug_info[k][0]:
-                bugtrace+=[j[bug_info[k][0].index(bug)] for j in bug_info[k][1]]
-            else:
-                bugtrace+=[0 for j in bug_info[k][1]]
-        lines.append(bugtrace)
-    ax = plt.gca()
-    flag = 0
-    for bugtrace in lines:
-        plt.plot(times, [log(i+(i==0)*1e-6) for i in bugtrace[1:]], label="bug "+str(bugtrace[0]))
-        for time in times:
-            if time in times_markers and bugtrace[1:][times.index(time)] != 0:
-                if flag == 0:
-                    plt.scatter(time, log(bugtrace[1:][times.index(time)]),color='k', marker = 'x', label="transition")
-                    flag = 1
-                else:
-                    plt.scatter(time, log(bugtrace[1:][times.index(time)]),color='k', marker = 'x')
-    plt.legend()
-    plt.xlabel("time")
-    plt.ylabel("bug growth(logscale)")
-    plt.draw()
 
 # about anomalous species
 def tellFreaks2d(species_list, Size, v = False):

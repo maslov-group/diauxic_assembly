@@ -4,7 +4,7 @@ Nr = 4
 theta = 1e-1 # hard minimum of growth rates
 g_mu  = 0.25
 g_sigma= 0.05
-Size = 480
+Size = 480 # 480 different species for each preference order
 lagTime = 0
 # dynamic parameters
 D = 0.01 # (inverse) dilution factor
