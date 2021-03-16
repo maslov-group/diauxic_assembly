@@ -1,5 +1,5 @@
 exec(open("ModulesWithLags.py", encoding = 'utf-8').read())
-exec(open("parameters.py", encoding = 'utf-8').read())
+exec(open("Parameters.py", encoding = 'utf-8').read())
 import numpy as np
 from math import *
 import random
@@ -72,7 +72,7 @@ def model(Nr_in, indices):
         count = count + 1
         if count > 10:
             cycled = True
-            print('A cycle occurs')
+            print('A cycle might have occured')
     #print(survivors)
     #print(output(system))
     details['round_idx'] = details['round_idx'][1:]

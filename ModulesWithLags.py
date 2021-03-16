@@ -175,7 +175,7 @@ def invade(system, bug, growth_rate_list, invlist):
             details['round_idx'][-1] += T_dilute
         return system, ext_list
 
-def round_robin_invade(system, ext_list, growth_rate_list):
+def round_robin_invade(system, ext_list, growth_rate_list, lagTime):
     for bug in ext_list:
         system, new_ext_list = invade(system, bug, growth_rate_list, ext_list)
     return system, new_ext_list

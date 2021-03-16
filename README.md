@@ -1,4 +1,4 @@
-## Complementary resource preferences spontaneously emergein diauxic microbial communities
+## Complementary resource preferences spontaneously emerge in diauxic microbial communities
 
 This repository contains the code used to simulate the community assembly of diauxic microbes under serial dilution, under conditions that are considered in this paper.  
 
@@ -13,12 +13,16 @@ This repository contains the code used to simulate the community assembly of dia
 | Standard error of growth rates' distribution before rectified | 0.05  |                                                              |
 | Threshold of rectification                                   | 0.1   |                                                              |
 | Yield of all species                                         | 0.5   |                                                              |
-| Lag time of all species on all resources                     | 0     | Time unit is hr. A lag of 1 hr is also considered.           |
+| Lag time of all species on all resources                     | 0     | Time unit is hr. Lags of 1 hr and 5 hr are also considered.  |
 | Dilution factor                                              | 100   | In supp. a dilution factor of 2 is also considered.          |
 | Period of dilution                                           | 24    |                                                              |
 | Concentration of every resource at the beginning of the first cycle | 1e0   | All concentration unit is a.u. In main text all resources are provided at equal amount; in supp. a ratio of 100:1:1:1 is considered with the total resources concentration being constant. |
 | Microbe concentration at invasion                            | 1e-6  |                                                              |
 | Threshold under which a species is seen as eliminated        | 1e-6  |                                                              |
 | Threshold under which a resource is seen as depleted         | 1e-9  |                                                              |
-| Number of simulated independent systems                      | 958   |  Originally 1000; some data were broken on the server                                                            |
 
+ModulesWithLags.py contains the functions used in the simulation. 
+
+Parameters.py contains the value of parameters. 
+
+RunsWithLags.py and Example_run.ipynb run the simulation. 
